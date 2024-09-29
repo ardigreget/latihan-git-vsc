@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Token Checker Extension",
+    "version": "1.0",
+    "description": "Memeriksa token pengguna dan mengarahkan sesuai status.",
+    "permissions": [
+      "cookies",
+      "tabs",
+      "activeTab",
+      "storage"
+    ],
+    "host_permissions": [
+      "https://testingwebsite.com/*"
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icons/icon.png",
+        "48": "icons/icon.png",
+        "128": "icons/icon.png"
+      }
+    },
+    "background": {
+      "service_worker": "background.js"
+    }
+  }
+  
