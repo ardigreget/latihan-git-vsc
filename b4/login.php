@@ -4,7 +4,12 @@ session_start();
 require 'config.php';
 
 header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: chrome-extension://*"); // Ganti dengan ID ekstensi Anda
+
+// Ganti dengan ID ekstensi Anda
+$extension_id = 'abcdefghijklmnopqrstu1234567890'; // Ganti dengan ID sebenarnya
+$origin = "chrome-extension://$extension_id";
+
+header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 
 try {

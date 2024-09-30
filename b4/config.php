@@ -8,7 +8,7 @@ $password = 'Sqn^y^8r';
 $charset = 'utf8mb4';
 
 // Base URL
-$base_url = 'http://akses.papindo.id/b4';
+$base_url = 'http://akses.papindo.id/b4'; // Ganti dengan HTTPS jika memungkinkan
 
 // DSN untuk PDO
 $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";

@@ -1,12 +1,16 @@
 {
     "manifest_version": 3,
-    "name": "4E Login Checker",
+    "name": "Login Checker",
     "version": "1.0",
     "description": "Memeriksa status login dan menampilkan pesan",
     "permissions": [
         "cookies",
         "activeTab",
-        "scripting"
+        "scripting",
+        "tabs"
+    ],
+    "host_permissions": [
+        "http://akses.papindo.id/*"
     ],
     "action": {
         "default_popup": "popup.html"
