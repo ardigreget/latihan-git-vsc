@@ -4,37 +4,63 @@
     <title>Login Checker</title>
     <style>
         body {
-            min-width: 200px;
-            min-height: 100px;
+            min-width: 300px;
             font-family: Arial, sans-serif;
             padding: 10px;
         }
         #message {
             margin-top: 20px;
-            font-size: 16px;
+            font-size: 14px;
             color: #333;
         }
-        #loginButton, #actionButton {
+        #loginForm, #status {
             display: none;
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 95%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        button {
             padding: 8px 12px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
-            text-decoration: none;
             margin-top: 10px;
         }
-        #loginButton:hover, #actionButton:hover {
+        button:hover {
             background-color: #45a049;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
         }
     </style>
 </head>
 <body>
-    <h3>Status Login</h3>
+    <h3>Login Checker</h3>
     <div id="message">Memeriksa status...</div>
-    <a href="https://akses.papindo.id/v1/login.php" id="loginButton" target="_blank">Login</a>
-    <button id="actionButton">Coba Lagi</button>
-
+    
+    <!-- Form Login -->
+    <div id="loginForm">
+        <h4>Login</h4>
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button id="loginButton">Login</button>
+        <div id="loginError" class="error"></div>
+    </div>
+    
+    <!-- Status Login -->
+    <div id="status">
+        <h4>Status Login</h4>
+        <p id="statusMessage" class="success"></p>
+    </div>
+    
     <script src="popup.js"></script>
 </body>
 </html>

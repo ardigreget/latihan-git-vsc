@@ -1,24 +1,50 @@
 <?php
 // generate_token.php
-session_start();
 require 'config.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in']);
+// Atur header untuk CORS
+header("Access-Control-Allow-Origin: chrome-extension://*"); // Ganti dengan ID ekstensi Anda
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+// Cek metode request
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success' => false, 'message' => 'Metode tidak diizinkan']);
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$browser_id = isset($_GET['browser_id']) ? $_GET['browser_id'] : '';
+// Ambil data JSON dari body
+$data = json_decode(file_get_contents('php://input'), true);
 
-if (!$browser_id) {
-    echo json_encode(['success' => false, 'message' => 'Browser ID not provided']);
+if (!isset($data['username']) || !isset($data['password']) || !isset($data['browser_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Data tidak lengkap']);
+    exit();
+}
+
+$username = trim($data['username']);
+$password = $data['password'];
+$browser_id = trim($data['browser_id']);
+
+// Cari pengguna berdasarkan username
+$stmt = $pdo->prepare('SELECT * FROM users WHERE username = ?');
+$stmt->execute([$username]);
+$user = $stmt->fetch();
+
+if (!$user) {
+    echo json_encode(['success' => false, 'message' => 'Pengguna tidak ditemukan']);
+    exit();
+}
+
+// Verifikasi kata sandi
+if (!password_verify($password, $user['password'])) {
+    echo json_encode(['success' => false, 'message' => 'Kata sandi salah']);
     exit();
 }
 
 // Cek jumlah token aktif dalam 1 jam terakhir
 $stmt = $pdo->prepare('SELECT COUNT(*) as count FROM extension_tokens WHERE user_id = ? AND created_at >= (NOW() - INTERVAL 1 HOUR)');
-$stmt->execute([$user_id]);
+$stmt->execute([$user['id']]);
 $count = $stmt->fetch()['count'];
 
 if ($count >= 2) {
@@ -26,12 +52,22 @@ if ($count >= 2) {
     exit();
 }
 
+// Cek apakah browser_id sudah digunakan
+$stmt = $pdo->prepare('SELECT * FROM extension_tokens WHERE user_id = ? AND browser_id = ? AND created_at >= (NOW() - INTERVAL 1 HOUR)');
+$stmt->execute([$user['id'], $browser_id]);
+$existing = $stmt->fetch();
+
+if ($existing) {
+    echo json_encode(['success' => false, 'message' => 'Ekstensi sudah digunakan di browser ini']);
+    exit();
+}
+
 // Generate token unik
-$token = bin2hex(random_bytes(16));
+$token = bin2hex(random_bytes(32)); // Token 64 karakter
 
 // Insert token
 $stmt = $pdo->prepare('INSERT INTO extension_tokens (user_id, token, browser_id) VALUES (?, ?, ?)');
-$stmt->execute([$user_id, $token, $browser_id]);
+$stmt->execute([$user['id'], $token, $browser_id]);
 
 echo json_encode(['success' => true, 'token' => $token]);
 ?>

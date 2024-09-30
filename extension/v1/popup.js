@@ -19,9 +19,12 @@ function generateUUID() { // Public Domain/MIT
 
 document.addEventListener('DOMContentLoaded', function() {
     const messageDiv = document.getElementById('message');
+    const loginForm = document.getElementById('loginForm');
     const loginButton = document.getElementById('loginButton');
-    const actionButton = document.getElementById('actionButton');
-
+    const loginError = document.getElementById('loginError');
+    const statusDiv = document.getElementById('status');
+    const statusMessage = document.getElementById('statusMessage');
+    
     // Inisialisasi browser_id
     chrome.storage.local.get(['browser_id'], function(result) {
         if (!result.browser_id) {
@@ -38,11 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkLogin() {
         const apiUrl = 'https://akses.papindo.id/v1/check_login.php';
 
-        chrome.storage.local.get(['token', 'browser_id'], function(result) {
+        chrome.storage.local.get(['token'], function(result) {
             const token = result.token;
-            const browser_id = result.browser_id;
-            if (!token || !browser_id) {
-                requestToken();
+            if (!token) {
+                // Tampilkan form login
+                messageDiv.textContent = 'Anda belum login.';
+                loginForm.style.display = 'block';
                 return;
             }
 
@@ -50,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'X-Browser-ID': browser_id
+                    'X-Browser-ID': result.browser_id
                 },
                 credentials: 'include'
             })
@@ -58,9 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.loggedIn) {
                     messageDiv.textContent = `Terimakasih, ${data.username}!`;
+                    statusDiv.style.display = 'block';
+                    statusMessage.textContent = `Anda telah login sebagai ${data.roles}.`;
                 } else {
-                    messageDiv.textContent = 'Anda belum login atau token tidak valid.';
-                    loginButton.style.display = 'inline-block';
+                    messageDiv.textContent = 'Token tidak valid atau telah kedaluwarsa.';
+                    loginForm.style.display = 'block';
                 }
             })
             .catch(error => {
@@ -70,40 +76,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function requestToken() {
+    loginButton.addEventListener('click', function() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            loginError.textContent = 'Silakan isi semua field.';
+            return;
+        }
+
+        // Reset error
+        loginError.textContent = '';
+
+        // Ambil browser_id
         chrome.storage.local.get(['browser_id'], function(result) {
             const browser_id = result.browser_id;
             if (!browser_id) {
-                messageDiv.textContent = 'Browser ID tidak ditemukan.';
+                loginError.textContent = 'Browser ID tidak ditemukan.';
                 return;
             }
 
-            fetch('https://akses.papindo.id/v1/generate_token.php?browser_id=' + browser_id, {
-                method: 'GET',
+            // Kirim permintaan ke generate_token.php
+            fetch('https://akses.papindo.id/v1/generate_token.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    browser_id: browser_id
+                }),
                 credentials: 'include'
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Simpan token
                     chrome.storage.local.set({ token: data.token }, function() {
-                        messageDiv.textContent = `Terimakasih! Ekstensi aktif.`;
-                        actionButton.style.display = 'inline-block';
-                        actionButton.textContent = 'Coba Lagi';
+                        messageDiv.textContent = 'Login berhasil!';
+                        loginForm.style.display = 'none';
+                        statusDiv.style.display = 'block';
+                        statusMessage.textContent = 'Anda telah login.';
                     });
                 } else {
-                    messageDiv.textContent = data.message;
-                    actionButton.style.display = 'inline-block';
-                    actionButton.textContent = 'Coba Lagi';
+                    loginError.textContent = data.message;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                messageDiv.textContent = 'Terjadi kesalahan saat mendapatkan token.';
+                loginError.textContent = 'Terjadi kesalahan saat login.';
             });
         });
-    }
-
-    actionButton.addEventListener('click', function() {
-        requestToken();
     });
 });
