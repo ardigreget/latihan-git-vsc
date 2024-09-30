@@ -10,15 +10,10 @@
       "storage"
     ],
     "host_permissions": [
-      "https://testingwebsite.com/*"
+      "https://akses.papindo.id/*"
     ],
     "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icons/icon.png",
-        "48": "icons/icon.png",
-        "128": "icons/icon.png"
-      }
+      "default_popup": "popup.html"
     },
     "background": {
       "service_worker": "background.js"
