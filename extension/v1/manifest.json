@@ -4,12 +4,17 @@
     "version": "1.0",
     "description": "Memeriksa status login pengguna dan menampilkan pesan yang sesuai.",
     "permissions": [
-        "storage"
+       "storage",
+       "cookies"
     ],
     "host_permissions": [
-        "https://akses.papindo.id/v1/*"
+       "https://akses.papindo.id/*"
     ],
     "action": {
-        "default_popup": "popup.html"
+       "default_popup": "popup.html"
+    },
+    "background": {
+       "service_worker": "background.js"
     }
-}
+ }
+ 

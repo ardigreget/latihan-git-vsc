@@ -1,66 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Checker</title>
     <style>
-        body {
-            min-width: 300px;
-            font-family: Arial, sans-serif;
-            padding: 10px;
-        }
-        #message {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #333;
-        }
-        #loginForm, #status {
-            display: none;
-            margin-top: 20px;
-        }
-        input[type="text"], input[type="password"] {
-            width: 95%;
-            padding: 8px;
-            margin: 5px 0;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 8px 12px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-        }
-        .success {
-            color: green;
-        }
+        /* Style seperti referensi yang sudah ada */
     </style>
 </head>
 <body>
     <h3>Login Checker</h3>
     <div id="message">Memeriksa status...</div>
-    
+
     <!-- Form Login -->
-    <div id="loginForm">
+    <div id="loginForm" style="display: none;">
         <h4>Login</h4>
         <input type="text" id="username" placeholder="Username" required><br>
         <input type="password" id="password" placeholder="Password" required><br>
         <button id="loginButton">Login</button>
         <div id="loginError" class="error"></div>
     </div>
-    
+
     <!-- Status Login -->
-    <div id="status">
+    <div id="status" style="display: none;">
         <h4>Status Login</h4>
         <p id="statusMessage" class="success"></p>
     </div>
-    
+
     <script src="popup.js"></script>
 </body>
 </html>
