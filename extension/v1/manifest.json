@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "Login Checker",
+    "version": "1.0",
+    "description": "Memeriksa status login pengguna dan menampilkan pesan yang sesuai.",
+    "permissions": [
+        "cookies",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://akses.papindo.id/*"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    }
+}
