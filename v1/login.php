@@ -15,14 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = $stmt->fetch();
 
     if ($user) {
-        // Untuk kesederhanaan, kata sandi dibandingkan langsung
-        // Disarankan menggunakan password_hash dan password_verify
-        if ($password === $user['password']) {
+        // Verifikasi kata sandi
+        if (password_verify($password, $user['password'])) {
             // Set sesi
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['roles'] = $user['roles'];
-            header('Location: index.php');
+            header('Location: dashboard.php');
             exit();
         } else {
             $message = 'Kata sandi salah!';
