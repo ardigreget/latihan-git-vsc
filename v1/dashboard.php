@@ -11,43 +11,46 @@ if (!isset($_SESSION['user_id'])) {
 $roles = $_SESSION['roles'];
 $message = '';
 
-// Handle CRUD operations
+// Handle CRUD operations for users
 if ($roles === 'admin') {
     // CREATE
-    if (isset($_POST['create'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
         $new_username = $_POST['new_username'];
         $new_password = $_POST['new_password'];
         $new_roles = $_POST['new_roles'];
 
-        // Cek apakah username sudah ada
-        $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ?');
-        $stmt->execute([$new_username]);
-        if ($stmt->fetch()) {
-            $message = 'Username sudah ada!';
-        } else {
-            // Insert pengguna baru
-            $stmt = $pdo->prepare('INSERT INTO users (username, password, roles) VALUES (?, ?, ?)');
-            $stmt->execute([$new_username, $new_password, $new_roles]);
-            $message = 'Pengguna berhasil ditambahkan!';
-        }
+        // Hash password
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        // Insert user
+        $stmt = $pdo->prepare('INSERT INTO users (username, password, roles) VALUES (?, ?, ?)');
+        $stmt->execute([$new_username, $hashed_password, $new_roles]);
+        $message = 'Pengguna berhasil ditambahkan!';
     }
 
     // UPDATE
-    if (isset($_POST['update'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
         $update_id = $_POST['update_id'];
         $update_username = $_POST['update_username'];
         $update_password = $_POST['update_password'];
         $update_roles = $_POST['update_roles'];
 
-        $stmt = $pdo->prepare('UPDATE users SET username = ?, password = ?, roles = ? WHERE id = ?');
-        $stmt->execute([$update_username, $update_password, $update_roles, $update_id]);
+        if (!empty($update_password)) {
+            // Hash password jika diubah
+            $hashed_password = password_hash($update_password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare('UPDATE users SET username = ?, password = ?, roles = ? WHERE id = ?');
+            $stmt->execute([$update_username, $hashed_password, $update_roles, $update_id]);
+        } else {
+            // Update tanpa mengubah password
+            $stmt = $pdo->prepare('UPDATE users SET username = ?, roles = ? WHERE id = ?');
+            $stmt->execute([$update_username, $update_roles, $update_id]);
+        }
         $message = 'Pengguna berhasil diperbarui!';
     }
 
-    // DELETE
+    // DELETE User
     if (isset($_GET['delete'])) {
         $delete_id = $_GET['delete'];
-        // Jangan biarkan admin menghapus dirinya sendiri
         if ($delete_id == $_SESSION['user_id']) {
             $message = 'Anda tidak dapat menghapus diri sendiri!';
         } else {
@@ -56,12 +59,23 @@ if ($roles === 'admin') {
             $message = 'Pengguna berhasil dihapus!';
         }
     }
-}
 
-// Fetch semua pengguna untuk admin
-if ($roles === 'admin') {
+    // Handle Delete Extension Token
+    if (isset($_GET['delete_token'])) {
+        $token_id = $_GET['delete_token'];
+        $stmt = $pdo->prepare('DELETE FROM extension_tokens WHERE id = ? AND user_id = ?');
+        $stmt->execute([$token_id, $_SESSION['user_id']]);
+        $message = 'Akses browser telah dihapus!';
+    }
+
+    // Fetch semua pengguna
     $stmt = $pdo->query('SELECT * FROM users');
     $users = $stmt->fetchAll();
+
+    // Fetch active tokens
+    $stmt = $pdo->prepare('SELECT id, token, browser_id, created_at FROM extension_tokens WHERE user_id = ? AND created_at >= (NOW() - INTERVAL 1 HOUR)');
+    $stmt->execute([$_SESSION['user_id']]);
+    $tokens = $stmt->fetchAll();
 }
 
 // Fetch data pengguna yang sedang login
@@ -140,7 +154,7 @@ $current_user = $stmt->fetch();
                             <input type="text" name="update_username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
                         </td>
                         <td>
-                            <input type="text" name="update_password" value="<?php echo htmlspecialchars($user['password']); ?>" required>
+                            <input type="password" name="update_password" placeholder="Isi jika ingin mengubah">
                         </td>
                         <td>
                             <select name="update_roles">
@@ -157,6 +171,34 @@ $current_user = $stmt->fetch();
                             <?php endif; ?>
                         </td>
                     </form>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+
+        <!-- Kelola Ekstensi -->
+        <h3>Kelola Ekstensi</h3>
+        <?php if ($message): ?>
+            <p style="color:green;"><?php echo $message; ?></p>
+        <?php endif; ?>
+
+        <h4>Ekstensi Aktif (Dalam 1 Jam Terakhir)</h4>
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>ID</th>
+                <th>Browser ID</th>
+                <th>Token</th>
+                <th>Dibuat Pada</th>
+                <th>Aksi</th>
+            </tr>
+            <?php foreach ($tokens as $token): ?>
+                <tr>
+                    <td><?php echo $token['id']; ?></td>
+                    <td><?php echo htmlspecialchars($token['browser_id']); ?></td>
+                    <td><?php echo htmlspecialchars($token['token']); ?></td>
+                    <td><?php echo htmlspecialchars($token['created_at']); ?></td>
+                    <td>
+                        <a href="dashboard.php?delete_token=<?php echo $token['id']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus akses ini?');">Delete</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </table>

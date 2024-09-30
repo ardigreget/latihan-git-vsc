@@ -14,7 +14,7 @@
             font-size: 16px;
             color: #333;
         }
-        #loginButton {
+        #loginButton, #actionButton {
             display: none;
             padding: 8px 12px;
             background-color: #4CAF50;
@@ -22,8 +22,9 @@
             border: none;
             cursor: pointer;
             text-decoration: none;
+            margin-top: 10px;
         }
-        #loginButton:hover {
+        #loginButton:hover, #actionButton:hover {
             background-color: #45a049;
         }
     </style>
@@ -32,6 +33,7 @@
     <h3>Status Login</h3>
     <div id="message">Memeriksa status...</div>
     <a href="https://akses.papindo.id/v1/login.php" id="loginButton" target="_blank">Login</a>
+    <button id="actionButton">Coba Lagi</button>
 
     <script src="popup.js"></script>
 </body>
