@@ -1,6 +1,5 @@
 <?php
 // config.php
-
 $host = 'localhost';
 $db   = 'u934654818_akses';
 $user = 'u934654818_akses';

@@ -1,33 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Checker</title>
     <style>
-        /* Style seperti referensi yang sudah ada */
+        body { font-family: Arial; padding: 10px; }
+        input { width: 100%; padding: 8px; margin: 8px 0; }
+        button { padding: 10px; background-color: #4CAF50; color: white; }
+        #message { margin-top: 20px; }
     </style>
 </head>
 <body>
     <h3>Login Checker</h3>
     <div id="message">Memeriksa status...</div>
-
-    <!-- Form Login -->
     <div id="loginForm" style="display: none;">
-        <h4>Login</h4>
-        <input type="text" id="username" placeholder="Username" required><br>
-        <input type="password" id="password" placeholder="Password" required><br>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
         <button id="loginButton">Login</button>
-        <div id="loginError" class="error"></div>
+        <div id="loginError" style="color: red;"></div>
     </div>
-
-    <!-- Status Login -->
-    <div id="status" style="display: none;">
-        <h4>Status Login</h4>
-        <p id="statusMessage" class="success"></p>
-    </div>
-
     <script src="popup.js"></script>
 </body>
 </html>

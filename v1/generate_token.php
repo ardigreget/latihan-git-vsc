@@ -3,7 +3,7 @@
 require 'config.php';
 
 // Atur header untuk CORS
-header("Access-Control-Allow-Origin: chrome-extension://*"); // Ganti dengan ID ekstensi Anda
+header("Access-Control-Allow-Origin: chrome-extension://*");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
@@ -53,7 +53,7 @@ if ($count >= 2) {
 }
 
 // Cek apakah browser_id sudah digunakan
-$stmt = $pdo->prepare('SELECT * FROM extension_tokens WHERE user_id = ? AND browser_id = ? AND created_at >= (NOW() - INTERVAL 1 HOUR)');
+$stmt = $pdo->prepare('SELECT * FROM extension_tokens WHERE user_id = ? AND browser_id = ?');
 $stmt->execute([$user['id'], $browser_id]);
 $existing = $stmt->fetch();
 
@@ -63,7 +63,7 @@ if ($existing) {
 }
 
 // Generate token unik
-$token = bin2hex(random_bytes(32)); // Token 64 karakter
+$token = bin2hex(random_bytes(32));
 
 // Insert token
 $stmt = $pdo->prepare('INSERT INTO extension_tokens (user_id, token, browser_id) VALUES (?, ?, ?)');
