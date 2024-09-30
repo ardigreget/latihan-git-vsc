@@ -1,5 +1,5 @@
 // Konfigurasi Umum
-const DOMAIN = "akses.papindo.id/v1/"; // Ganti dengan domain Anda
+const DOMAIN = "testingwebsite.com"; // Ganti dengan domain Anda
 const BASE_URL = `https://${DOMAIN}`;
 
 chrome.action.onClicked.addListener((tab) => {
