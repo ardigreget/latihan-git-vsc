@@ -4,11 +4,11 @@
 $host = 'localhost';
 $dbname = 'u934654818_akses';
 $username = 'u934654818_akses';
-$password = 'Sqn^y^8r';
+$password = 'Sqn^y^8r'; // Ganti dengan password Anda
 $charset = 'utf8mb4';
 
-// Base URL
-$base_url = 'http://akses.papindo.id/b4'; // Ganti dengan HTTPS jika memungkinkan
+// Base URL (Ganti jika menggunakan HTTPS)
+$base_url = 'http://akses.papindo.id/b4';
 
 // DSN untuk PDO
 $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";

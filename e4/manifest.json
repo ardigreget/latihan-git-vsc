@@ -1,21 +1,30 @@
 {
     "manifest_version": 3,
-    "name": "Login Checker",
+    "name": "Login Checker Extension",
     "version": "1.0",
     "description": "Memeriksa status login dan menampilkan pesan",
-    "permissions": [
-        "cookies",
-        "activeTab",
-        "scripting",
-        "tabs"
-    ],
-    "host_permissions": [
-        "http://akses.papindo.id/*"
-    ],
+    "homepage_url": "http://akses.papindo.id",
     "action": {
-        "default_popup": "popup.html"
+       "default_popup": "popup.html"
     },
     "background": {
-        "service_worker": "background.js"
-    }
-}
+       "service_worker": "background.js"
+    },
+    "commands": {
+       "_execute_action": {
+          "suggested_key": {
+             "windows": "Alt+Shift+G",
+             "mac": "Alt+Shift+G",
+             "chromeos": "Alt+Shift+G",
+             "linux": "Alt+Shift+G"
+          }
+       }
+    },
+    "host_permissions": [
+       "http://akses.papindo.id/*"
+    ],
+    "permissions": [
+       "cookies"
+    ]
+ }
+ 

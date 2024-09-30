@@ -2,49 +2,55 @@
 <html>
 <head>
     <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Anda dapat menambahkan CSS minimal atau Bootstrap jika diinginkan -->
 </head>
 <body>
     <h2>Login</h2>
     <form id="loginForm">
         <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="text" id="username" name="username" required /><br><br>
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+        <input type="password" id="password" name="password" required /><br><br>
         <button type="submit">Login</button>
     </form>
 
     <div id="message"></div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
 
-            const backendUrl = 'http://akses.papindo.id/b4'; // Ganti dengan URL backend Anda
+                const username = $('#username').val();
+                const password = $('#password').val();
+                const backendUrl = 'http://akses.papindo.id/b4/login.php'; // Ganti dengan HTTPS jika memungkinkan
 
-            fetch(`${backendUrl}/login.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include', // Untuk menyertakan cookie
-                body: JSON.stringify({ username, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const message = document.getElementById('message');
-                if(data.status === "success") {
-                    message.innerText = "Login berhasil!";
-                    // Redirect atau tutup halaman
-                    window.close();
-                } else {
-                    message.innerText = data.message;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                $.ajax({
+                    url: backendUrl,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username, password }),
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function(response) {
+                        if(response.status === "success") {
+                            $('#message').html('<p>Login berhasil! Menutup halaman...</p>');
+                            setTimeout(() => {
+                                window.close();
+                            }, 2000);
+                        } else {
+                            $('#message').html('<p>' + response.message + '</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        $('#message').html('<p>Terjadi kesalahan: ' + error + '</p>');
+                    }
+                });
             });
         });
     </script>
